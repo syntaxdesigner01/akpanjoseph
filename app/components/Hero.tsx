@@ -144,7 +144,7 @@ export default function Hero() {
 
           {/* Subtitle */}
           <p className="text-lg md:text-xl text-gray-800">
-            <span className="font-bold">Front-end developer</span> based in{" "}
+            <span className="font-bold">Front-end Engineer</span> based in{" "}
             <span className="font-bold italic">Nigeria</span>
           </p>
 

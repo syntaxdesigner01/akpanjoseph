@@ -1,4 +1,36 @@
-const experiences = [
+"use client";
+
+import { motion, useInView, animate } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import Timeline, { Experience } from "./Timeline";
+
+/* ── Sub-component: CountUp Animation ── */
+function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
+  const [displayValue, setDisplayValue] = useState(0);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+
+  useEffect(() => {
+    if (isInView) {
+      const controls = animate(0, value, {
+        duration: 2,
+        ease: "easeOut",
+        onUpdate: (latest) => setDisplayValue(Math.round(latest)),
+      });
+      return controls.stop;
+    }
+  }, [isInView, value]);
+
+  return (
+    <span ref={ref}>
+      {displayValue}
+      {suffix}
+    </span>
+  );
+}
+
+const experiences: Experience[] = [
+  // ... (rest of the experiences array remains the same)
   {
     year: "Feb 2025 – Sep 2025",
     title: "Frontend Engineer ",
@@ -43,7 +75,7 @@ const experiences = [
 
 export default function About() {
   return (
-    <section id="about" className="py-24 px-6 bg-white">
+    <section id="about" className="py-24 px-6 bg-white overflow-hidden">
       <div className="max-w-5xl mx-auto">
         {/* Section Label */}
         <div className="flex justify-center mb-10">
@@ -80,26 +112,28 @@ export default function About() {
         </div>
 
         {/* Stats */}
-        <div className="flex justify-center gap-12 mb-20">
+        <div className="flex  justify-center items-center md:gap-8 gap-12 mb-20">
           <div className="text-center">
-            <span className="block text-4xl font-black text-orange-500">
-              3+
+            <span className="block md:text-4xl text-xl font-black text-orange-500">
+              <CountUp value={3} suffix="+" />
             </span>
             <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest mt-1 block">
               Years
             </span>
           </div>
-          <div className="w-px bg-gray-100" />
+          <div className="hidden sm:block w-px h-12 bg-gray-100" />
           <div className="text-center">
-            <span className="block text-4xl font-black text-orange-500">4</span>
+            <span className="block md:text-4xl font-black text-orange-500">
+              <CountUp value={4} />
+            </span>
             <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest mt-1 block">
               Companies
             </span>
           </div>
-          <div className="w-px bg-gray-100" />
+          <div className="hidden sm:block w-px h-12 bg-gray-100" />
           <div className="text-center">
-            <span className="block text-4xl font-black text-orange-500">
-              5K+
+            <span className="block md:text-4xl font-black text-orange-500">
+              <CountUp value={5} suffix="K+" />
             </span>
             <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest mt-1 block">
               Users Served
@@ -114,108 +148,60 @@ export default function About() {
           </span>
         </div>
 
-        {/* Timeline */}
-        <div className="relative">
-          {/* Center vertical line */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-200 -translate-x-1/2" />
-
-          <div className="flex flex-col gap-10">
-            {experiences.map((exp, i) => (
-              <div
-                key={i}
-                className="relative grid grid-cols-2 gap-0 items-start"
-              >
-                {exp.side === "left" ? (
-                  <>
-                    {/* Left card */}
-                    <div className="pr-10 flex justify-end">
-                      <ExperienceCard exp={exp} align="right" />
-                    </div>
-
-                    {/* Center dot */}
-                    <div className="absolute left-1/2 -translate-x-1/2 top-5 w-3.5 h-3.5 rounded-full bg-orange-500 border-2 border-white shadow z-10" />
-
-                    {/* Right empty */}
-                    <div />
-                  </>
-                ) : (
-                  <>
-                    {/* Left empty */}
-                    <div />
-
-                    {/* Center dot */}
-                    <div className="absolute left-1/2 -translate-x-1/2 top-5 w-3.5 h-3.5 rounded-full bg-gray-900 border-2 border-white shadow z-10" />
-
-                    {/* Right card */}
-                    <div className="pl-10 flex justify-start">
-                      <ExperienceCard exp={exp} align="left" />
-                    </div>
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* Timeline Component */}
+        <Timeline experiences={experiences} />
 
         {/* Quote */}
-        <div className="mt-20 bg-gray-900 text-white rounded-xl px-8 py-8 relative overflow-hidden">
-          <div className="absolute top-4 left-6 text-5xl text-gray-700 font-serif leading-none">
-            "
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="mt-20 relative max-w-2xl mx-auto"
+        >
+          <div className="absolute inset-0 bg-linear-to-br from-gray-900 via-gray-900 to-black rounded-3xl -rotate-1 opacity-10" />
+          <div className="relative bg-gray-900 text-white rounded-3xl p-8 md:p-10 overflow-hidden shadow-xl border border-white/5">
+            {/* Background Decoration */}
+            <div className="absolute top-0 right-0 w-48 h-48 bg-orange-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+
+            <div className="relative z-10 flex flex-col items-center text-center">
+              <span className="text-orange-500 mb-4 opacity-50">
+                <svg
+                  width="30"
+                  height="30"
+                  viewBox="0 0 40 40"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12.5 10L7.5 20H15V30H5V20L10 10H12.5ZM27.5 10L22.5 20H30V30H20V20L25 10H27.5Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </span>
+
+              <blockquote className="text-sm md:text-base font-medium leading-relaxed text-gray-100 mb-6 italic max-w-lg">
+                "My mission is to deliver technical excellence through{" "}
+                <span className="text-orange-400">clean, scalable code</span>{" "}
+                while maintaining a relentless focus on the{" "}
+                <span className="text-orange-400">user experience</span>. I
+                bridge the gap between complex logic and intuitive design to
+                build products that truly matter."
+              </blockquote>
+
+              <div className="flex flex-col items-center">
+                <div className="h-px w-8 bg-orange-500/30 mb-3" />
+                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-orange-500">
+                  Akpan Joseph
+                </p>
+                <p className="text-[9px] text-gray-500 mt-1 uppercase tracking-widest font-semibold">
+                  Frontend Engineer
+                </p>
+              </div>
+            </div>
           </div>
-          <p className="text-sm leading-relaxed text-gray-300 pl-6 relative z-10 max-w-2xl">
-            I believe great software is built at the intersection of clean code
-            and thoughtful design. Every pixel matters, every interaction counts
-            — and I&apos;m here to make sure yours are exceptional.
-          </p>
-        </div>
+        </motion.div>
       </div>
     </section>
-  );
-}
-
-/* ── Sub-component: Experience Card ── */
-type Exp = (typeof experiences)[number];
-
-function ExperienceCard({ exp, align }: { exp: Exp; align: "left" | "right" }) {
-  return (
-    <div
-      className={`bg-gray-50 border border-gray-100 rounded-xl p-5 w-full max-w-sm hover:shadow-md transition-shadow duration-200 ${
-        align === "right" ? "text-right" : "text-left"
-      }`}
-    >
-      {/* Date */}
-      <span className="text-xs font-bold text-orange-500 tracking-widest uppercase">
-        {exp.year}
-      </span>
-
-      {/* Title */}
-      <h3 className="text-sm font-black text-gray-900 mt-1">{exp.title}</h3>
-
-      {/* Company + type */}
-      <p className="text-xs text-gray-400 font-medium mb-3">
-        {exp.company} · {exp.type}
-      </p>
-
-      {/* Summary paragraph */}
-      <p className="text-xs text-gray-500 leading-relaxed mb-4">
-        {exp.summary}
-      </p>
-
-      {/* Tech tags */}
-      <div
-        className={`flex flex-wrap gap-1.5 ${
-          align === "right" ? "justify-end" : "justify-start"
-        }`}
-      >
-        {exp.tech.map((t) => (
-          <span
-            key={t}
-            className="text-[10px] font-semibold bg-white border border-gray-200 text-gray-600 px-2 py-0.5 rounded-full"
-          >
-            {t}
-          </span>
-        ))}
-      </div>
-    </div>
   );
 }
