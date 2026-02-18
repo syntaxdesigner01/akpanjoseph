@@ -10,7 +10,7 @@ export default function ProjectControls({
   onNext,
 }: ProjectControlsProps) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex w-full justify-between md:w-sm md:justify-center items-center gap-3">
       <button
         onClick={onPrev}
         className="w-12 h-12 flex items-center justify-center rounded-full border border-gray-100 bg-white text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-300 shadow-sm"

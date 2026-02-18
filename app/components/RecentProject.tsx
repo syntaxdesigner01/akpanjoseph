@@ -78,9 +78,6 @@ export default function RecentProject() {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
-            <p className="text-xs font-bold text-orange-500 uppercase tracking-[0.2em] mb-3">
-              Case Studies
-            </p>
             <h2 className="text-4xl font-black text-gray-900 tracking-tight">
               Recent Projects<span className="text-orange-500">.</span>
             </h2>
