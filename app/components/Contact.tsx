@@ -6,23 +6,35 @@ import { useState } from "react";
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: "",
+    email: "",
     message: "",
   });
+  const [isSending, setIsSending] = useState(false);
+  const [isSent, setIsSent] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSending(true);
 
-    // Constructing the mailto link
-    const subject = encodeURIComponent(
-      `New Message from ${formData.name} (Portfolio)`,
-    );
-    const body = encodeURIComponent(
-      `Name: ${formData.name}\n\nMessage:\n${formData.message}`,
-    );
-    const mailtoLink = `mailto:syntaxdesigner01@gmail.com?subject=${subject}&body=${body}`;
+    try {
+      const response = await fetch("/api/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-    // Opening the user's default email client
-    window.location.href = mailtoLink;
+      if (response.ok) {
+        setIsSent(true);
+        setFormData({ name: "", email: "", message: "" });
+        setTimeout(() => setIsSent(false), 5000);
+      } else {
+        alert("Failed to send message. Please try again.");
+      }
+    } catch (error) {
+      alert("An error occurred. Please try again later.");
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -51,7 +63,7 @@ export default function Contact() {
             {/* Contact Details Cards */}
             <div className="space-y-4">
               <a
-                href="mailto:syntaxdesigner01@gmail.com"
+                href="mailto:akpanjoseph2021@gmail.com"
                 className="group flex items-center gap-4 p-4 rounded-2xl border border-gray-100 bg-gray-50/50 hover:bg-orange-500 hover:border-orange-500 transition-all duration-300"
               >
                 <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-gray-900 group-hover:bg-white/20 group-hover:text-white transition-colors shadow-sm">
@@ -74,7 +86,7 @@ export default function Contact() {
                     Email Me
                   </p>
                   <p className="text-sm font-bold text-gray-900 group-hover:text-white">
-                    syntaxdesigner01@gmail.com
+                    akpanjoseph2021@gmail.com
                   </p>
                 </div>
               </a>
@@ -125,20 +137,37 @@ export default function Contact() {
             <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 
             <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">
-                  Full Name
-                </label>
-                <input
-                  required
-                  type="text"
-                  placeholder="John Doe"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  className="w-full bg-gray-50 border border-gray-100 text-gray-900 text-sm rounded-2xl p-4 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all outline-none"
-                />
+              <div className="grid grid-cols-1  gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">
+                    Full Name
+                  </label>
+                  <input
+                    required
+                    type="text"
+                    placeholder="John Doe"
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                    className="w-full bg-gray-50 border border-gray-100 text-gray-900 text-sm rounded-2xl p-4 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all outline-none"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">
+                    Email Address
+                  </label>
+                  <input
+                    required
+                    type="email"
+                    placeholder="john@example.com"
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                    className="w-full bg-gray-50 border border-gray-100 text-gray-900 text-sm rounded-2xl p-4 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all outline-none"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -159,9 +188,20 @@ export default function Contact() {
 
               <button
                 type="submit"
-                className="w-full bg-gray-900 hover:bg-orange-600 text-white font-bold text-sm uppercase tracking-[0.2em] py-5 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-orange-500/20 active:scale-95"
+                disabled={isSending || isSent}
+                className={`w-full font-bold text-sm uppercase tracking-[0.2em] py-5 rounded-2xl transition-all duration-300 shadow-lg active:scale-95 ${
+                  isSent
+                    ? "bg-green-500 text-white"
+                    : isSending
+                      ? "bg-gray-400 cursor-not-allowed text-white"
+                      : "bg-gray-900 hover:bg-orange-600 text-white hover:shadow-orange-500/20"
+                }`}
               >
-                Send Message
+                {isSent
+                  ? "Message Sent!"
+                  : isSending
+                    ? "Sending..."
+                    : "Send Message"}
               </button>
             </form>
           </motion.div>
