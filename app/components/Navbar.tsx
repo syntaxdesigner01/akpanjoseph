@@ -5,13 +5,13 @@ export default function Navbar() {
         {/* Logo */}
         <div className="flex items-center gap-1">
           <span className="text-xs font-bold tracking-widest text-gray-400 uppercase">
-            EF
+            AK
           </span>
         </div>
 
         {/* Name */}
         <span className="text-sm font-semibold tracking-widest uppercase text-gray-800">
-          Emmanuel Pro
+          Akpan Joseph
         </span>
 
         {/* Hire Me Button */}
